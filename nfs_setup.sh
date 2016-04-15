@@ -1,7 +1,8 @@
 #!/bin/bash
-
-
 set -e
+
+sudo sed -i 's/STATDOPTS=/STATDOPTS="--port 32765 --outgoing-port 32766"/g' /etc/default/nfs-common
+sudo -i 's/RPCMOUNTDOPTS="--manage-gids"/RPCMOUNTDOPTS="--manage-gids -p 32767"/g' /etc/default/nfs-kernel-server
 
 mounts="${@}"
 
