@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-
-
-
-
 mounts="${@}"
 
 for mnt in "${mounts[@]}"; do
