@@ -1,11 +1,19 @@
-FROM ubuntu
+FROM bigm/base-deb
 
-RUN apt-get update && apt-get install -y nfs-kernel-server
-RUN mkdir -p /exports
+# install nfs
+RUN /xt/tools/_apt_install nfs-kernel-server netbase
 
-VOLUME /exports
+ENV NFS_EXPORT_FOLDER /exports
+RUN mkdir -p $NFS_EXPORT_FOLDER
 
-EXPOSE 111/udp 2049/tcp  32764/tcp 32764/udp 32765/tcp 32765/udp 32766/tcp 32766/udp 32767/tcp 32767/udp 32768/tcp 32768/udp 32769/tcp 32769/udp
+# final
+ADD supervisor/* /etc/supervisord.d/
+ADD startup/* /prj/startup/
+EXPOSE 111/udp 2049/tcp
 
-ADD src/run.sh /usr/local/bin/run.sh
-ENTRYPOINT ["run.sh"]
+ADD nfs-run.sh /usr/local/bin/nfs-run
+#CMD ["/usr/local/bin/nfs-run"]
+
+
+# https://www.howtoforge.com/nfs_ssh_tunneling
+RUN sed -i 's/^RPCMOUNTDOPTS=.*/RPCMOUNTDOPTS="--manage-gids --port 2233"/' /etc/default/nfs-kernel-server
